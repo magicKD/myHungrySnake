@@ -18,6 +18,7 @@ var scoreBox = document.getElementById("score");
 var startGameBool = true;
 var startPauseBool = true;
 //蛇的运动
+
 var snakeMove;
 var speed = 200;
 
@@ -77,8 +78,26 @@ function food() {
     food.style.width = this.foodW + "px";
     food.style.height = this.foodH + "px";
     food.style.position = "absolute"; //绝对定位才能控制位置
-    this.foodX = Math.floor(Math.random() * (this.mapW / 20));
-    this.foodY = Math.floor(Math.random() * (this.mapH / 20));
+    //优化生成食物的位置
+    var bFind = false;
+    while (!bFind){
+        var tmpX = Math.floor(Math.random() * (this.mapW / 20));
+        var tmpY = Math.floor(Math.random() * (this.mapH / 20));
+        var bOK = true;
+        for (var i = 0; i < this.snakeBody.length; i++){
+            if (this.snakeBody[i][0] == tmpX && this.snakeBody[i][1] == tmpY){
+                bOK = false;
+                break;
+            }
+        }
+        if (bOK){
+            bFind = true;
+            this.foodX = tmpX;
+            this.foodY = tmpY;
+        }
+    }
+    // this.foodX = Math.floor(Math.random() * (this.mapW / 20));
+    // this.foodY = Math.floor(Math.random() * (this.mapH / 20));
     food.style.left = this.foodX * 20 + "px";
     food.style.top = this.foodY * 20 + "px";
     this.mapDiv.appendChild(food).setAttribute("class", "food");
@@ -250,6 +269,7 @@ function bindEvent() {
     //鼠标点击
     close.onclick = function(){
         lose.style.display = "none";
+        startPage.style.display = "block";
         // startAndPause();
     }
     startBtn.onclick = function(){
