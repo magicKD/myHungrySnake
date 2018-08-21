@@ -22,6 +22,145 @@ var startPauseBool = true;
 var snakeMove;
 var speed = 200;
 
+function Snake(bench){
+    var _this = {};
+    _this._bench = bench;
+    _this._snakeW = 20;
+    _this._snakeH = 20;
+    if (bench == "red"){
+        _this.snakeBody = [
+            [3, 1, "head"],
+            [2, 1, "body"],
+            [1, 1, "body"]
+        ];
+        //游戏属性
+        _this.direct = "right";
+        _this.score = 0;
+        //判断能否转向
+        _this.left = false;
+        _this.right = false;
+        _this.up = true;
+        _this.down = true;
+    } else{
+        _this.snakeBody = [
+            [3, 10, "head"],
+            [2, 10, "body"],
+            [1, 10, "body"]
+        ];
+        //游戏属性
+        _this.direct = "right";
+        _this.score = 0;
+        //判断能否转向
+        _this.left = false;
+        _this.right = false;
+        _this.up = true;
+        _this.down = true;
+    }
+    /**
+     * 生成蛇
+     */
+    _this.snake = function() {
+        for (var i = 0; i < _this.snakeBody.length; i++) {
+            var snake = document.createElement("div");
+            snake.style.width = _this.snakeW + "px";
+            snake.style.height = _this.snakeH + "px";
+            snake.style.position = "absolute";
+            snake.style.left = _this.snakeBody[i][0] * 20 + "px";
+            snake.style.top = _this.snakeBody[i][1] * 20 + "px";
+            snake.classList.add(_this.snakeBody[i][2]); //添加类名
+            this.mapDiv.appendChild(snake).classList.add("snake");
+            //判断蛇头方向
+            switch (_this.direct) {
+                case "right":
+                    break;
+                case "up":
+                    snake.style.transform = "rotate(270deg)";
+                    break;
+                case "left":
+                    snake.style.transform = "rotate(180deg)";
+                    break;
+                case "down":
+                    snake.style.transform = "rotate(90deg)";
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    _this.move = function() {
+        for (var i = snakeBody.length - 1; i >= 1; i--) {
+            _this.snakeBody[i][0] = _this.snakeBody[i - 1][0];
+            _this.snakeBody[i][1] = _this.snakeBody[i - 1][1];
+        }
+        switch (_this.direct) {
+            case "right":
+                _this.snakeBody[0][0] += 1;
+                break;
+            case "up":
+                _this.snakeBody[0][1] -= 1;
+                break;
+            case "left":
+                _this.snakeBody[0][0] -= 1;
+                break;
+            case "down":
+                _this.snakeBody[0][1] += 1;
+                break;
+            default:
+                break;
+        }
+        //删除原来那条蛇，重新渲染一条蛇
+        removeClass("snake");
+        snake();
+        //碰撞检测
+        console.log(_this.snakeBody[0][0] + " " + _this.snakeBody[0][1]);
+        //1. 吃到食物了
+        if (_this.snakeBody[0][0] == _this.foodX && _this.snakeBody[0][1] == _this.foodY) {
+            //蛇长+1
+            var snakeEndX = _this.snakeBody[_this.snakeBody.length - 1][0];
+            var snakeEndY = _this.snakeBody[_this.snakeBody.length - 1][1];
+            switch (_this.direct) {
+                case "right":
+                    _this.snakeBody.push([snakeEndX + 1, snakeEndY, "body"]);
+                    break;
+                case "up":
+                    _this.snakeBody.push([snakeEndX, snakeEndY - 1, "body"]);
+                    break;
+                case "left":
+                    _this.snakeBody.push([snakeEndX - 1, snakeEndY, "body"]);
+                    break;
+                case "down":
+                    _this.snakeBody.push([snakeEndX, snakeEndY + 1, "body"]);
+                    break;
+    
+            }
+            //分数+1
+            _this.score += 1;
+            scoreBox.innerHTML = _this.score;
+            //重新生成食物
+            removeClass("food");
+            food();
+        }
+        //2. 碰到边界了
+        if (_this.snakeBody[0][0] < 0 || _this.snakeBody[0][0] > _this.mapW / 20) {
+             console.log("碰到左右边界了 " + _this.mapW / 20);
+            reloadGame();
+        }
+        if (_this.snakeBody[0][1] < 0 || _this.snakeBody[0][1] > _this.mapH / 20) {
+             console.log("碰到上下边界了" + _this.mapH / 20);
+            reloadGame();
+        }
+        var snakeHX = _this.snakeBody[0][0];
+        var snakeHY = _this.snakeBody[0][1];
+        for (var i = 1; i < _this.snakeBody.length; i++) {
+            if (snakeHX == _this.snakeBody[i][0] && snakeHY == _this.snakeBody[i][1]) {
+                 console.log("吃到自己了");
+                reloadGame();
+            }
+        }
+    }
+    return _this;
+}
+
 init();
 /**
  * 地图中以20为基本单位，实现坐标系
@@ -64,6 +203,10 @@ function startGame() {
     //生成食物
     food();
     //生成蛇
+    this.snake1 = Snake("red");
+    this.snake2 = Snake("black");
+    //snake1.snake();
+    //snake2.snake();
     snake();
     
     //绑定键盘事件
