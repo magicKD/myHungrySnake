@@ -1,0 +1,19 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    width: 100%;
+    height: 759px;
+    background-image: url("../img/bg.jpg");
+    background-size: 100% 100%;
+    align-content: center;
+    position: relative;
+}
+
+.chooseList{
+    position: absolute;
+    top: 45%;
+    left: 45%;
+}
